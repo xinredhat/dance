@@ -22,7 +22,7 @@ spec:
   - name: git-url
     value: '{{source_url}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/xjiang-tenant/rhtap-installer-konflux/ci-rhtap-installer:{{revision}}
+    value: quay.io/redhat-user-workloads/xjiang-tenant/rhtap-installer-ci/ci-rhtap-installer:{{revision}}
   - name: path-context
     value: ci
   - name: revision
