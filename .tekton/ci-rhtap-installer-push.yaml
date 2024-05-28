@@ -10,7 +10,7 @@ metadata:
       == "konflux_ci"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: rhtap-installer-konflux
+    appstudio.openshift.io/application: rhtap-installer-ci
     appstudio.openshift.io/component: ci-rhtap-installer
     pipelines.appstudio.openshift.io/type: build
   name: ci-rhtap-installer-on-push
