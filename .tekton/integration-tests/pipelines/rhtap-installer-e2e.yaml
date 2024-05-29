@@ -96,6 +96,75 @@ spec:
           value: "$(params.machine-type)"
         - name: aws-secrets
           value: "$(params.aws-secrets)"
+    - name: rhtap-install
+      when:
+        - input: "$(tasks.test-metadata.results.test-event-type)"
+          operator: in
+          values: ["pull_request"]
+      runAfter:
+        - provision-rosa
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/konflux-qe-incubator/konflux-qe-definitions.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: integration-test/rhtap/rhtap-installer/task/rhtap-installer.yaml
+      params:
+        - name: test-name
+          value: $(context.pipelineRun.name)
+        - name: ocp-login-command
+          value: "$(tasks.provision-rosa.results.ocp-login-command)"
+    - name: sprayproxy-provision
+      when:
+        - input: "$(tasks.test-metadata.results.test-event-type)"
+          operator: in
+          values: ["pull_request"]
+      runAfter:
+        - rhtap-install
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/konflux-qe-incubator/konflux-qe-definitions.git
+          - name: revision
+            value: main
+          - name: pathInRepo
+            value: common/tasks/sprayproxy/sprayproxy-provision/sprayproxy-register-server.yaml
+      params:
+        - name: ocp-login-command
+          value: "$(tasks.provision-rosa.results.ocp-login-command)"
+    - name: rhtap-e2e-tests
+      when:
+        - input: "$(tasks.test-metadata.results.test-event-type)"
+          operator: in
+          values: ["pull_request"]
+      runAfter:
+        - sprayproxy-provision
+      taskRef:
+        resolver: git
+        params:
+          - name: url
+            value: https://github.com/xinredhat/rhtap-installer.git
+          - name: revision
+            value: konflux_ci
+          - name: pathInRepo
+            value: .tekton/integration-tests/tasks/rhtap-e2e.yaml
+      params:
+        - name: test-name
+          value: $(context.pipelineRun.name)
+        - name: ocp-login-command
+          value: "$(tasks.provision-rosa.results.ocp-login-command)"
+        - name: git-repo
+          value: "$(tasks.test-metadata.results.git-repo)"
+        - name: git-url
+          value: "$(tasks.test-metadata.results.git-url)"
+        - name: git-revision
+          value: main
+        - name: oras-container
+          value: "$(tasks.test-metadata.results.oras-container)"
   finally:
     - name: deprovision-rosa-collect-artifacts
       when:
