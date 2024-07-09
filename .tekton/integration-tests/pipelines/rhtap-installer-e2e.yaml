@@ -39,6 +39,18 @@ spec:
     - name: oras-container
       default: 'quay.io/konflux-qe-incubator/konflux-qe-oci-storage'
       description: The ORAS container used to store all test artifacts.
+    - name: AWS_OIDC_CONFIG_ID
+      description: 'The AWS OIDC config ID used for provisioning the ROSA cluster.'
+    - name: OPERATOR_ROLES_PREFIX
+      description: 'The prefix for the operator roles.'
+    - name: SUBNET_IDS
+      description: 'The subnet IDs for the ROSA cluster.'
+    - name: INSTALL_ROLE_ARN
+      description: 'The role ARN for the install role.'
+    - name: SUPPORT_ROLE_ARN
+      description: 'The role ARN for the support role.'
+    - name: WORKER_ROLE_ARN
+      description: 'The role ARN for the worker role.'
   tasks:
     - name: rosa-hcp-metadata
       taskRef:
@@ -79,9 +91,9 @@ spec:
         resolver: git
         params:
           - name: url
-            value: https://github.com/konflux-qe-incubator/konflux-qe-definitions.git
+            value: https://github.com/xinredhat/konflux-qe-definitions.git
           - name: revision
-            value: main
+            value: RHTAP-2737
           - name: pathInRepo
             value: common/tasks/rosa/hosted-cp/rosa-hcp-provision/rosa-hcp-provision.yaml
       params:
@@ -97,6 +109,18 @@ spec:
           value: "$(params.machine-type)"
         - name: aws-secrets
           value: "$(params.aws-secrets)"
+        - name: AWS_OIDC_CONFIG_ID
+          value: "$(params.AWS_OIDC_CONFIG_ID)"
+        - name: OPERATOR_ROLES_PREFIX
+          value: "$(params.OPERATOR_ROLES_PREFIX)"
+        - name: SUBNET_IDS
+          value: "$(params.SUBNET_IDS)"
+        - name: INSTALL_ROLE_ARN
+          value: "$(params.INSTALL_ROLE_ARN)"
+        - name: SUPPORT_ROLE_ARN
+          value: "$(params.SUPPORT_ROLE_ARN)"
+        - name: WORKER_ROLE_ARN
+          value: "$(params.WORKER_ROLE_ARN)"
     - name: rhtap-install
       when:
         - input: "$(tasks.test-metadata.results.test-event-type)"
